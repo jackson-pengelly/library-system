@@ -1,0 +1,13 @@
+# Maven
+target/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Compiled
+*.class
+
+# Passwords
+src/main/resources/application.properties
