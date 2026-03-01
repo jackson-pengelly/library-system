@@ -26,6 +26,8 @@ public class Member {
 		this.lastName = lastName;
 		this.email = email;
 		this.phoneNumber = phoneNumber;
+		creationDate = LocalDateTime.now();
+		joinDate = LocalDate.now();
 	}
 
 	// constructor for loading from db
@@ -46,7 +48,8 @@ public class Member {
 	public String getFullName() {
 		return firstName + " " + lastName;
 	}
-
+	
+	@Override
 	public String toString() {
 		return String.format("ID: %d | Name: %s %s | Email: %s | Phone: %s | Type: %s | Active: %s", memberID,
 				firstName, lastName, email, phoneNumber, premium ? "Premium" : "Standard", active ? "Yes" : "No");
@@ -120,13 +123,5 @@ public class Member {
 
 	public void setActive(boolean active) {
 		this.active = active;
-	}
-
-	public void setJoinDate(LocalDate joinDate) {
-		this.joinDate = joinDate;
-	}
-
-	public void setCreationDate(LocalDateTime creationDate) {
-		this.creationDate = creationDate;
 	}
 }

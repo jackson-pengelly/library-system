@@ -8,28 +8,30 @@ public class Book {
 	private String title;
 	private String author;
 	private String publisher;
-	private LocalDate publicationYear;
+	private int publicationYear;
 	private String genre;
 	private int totalCopies;
 	private int availableCopies;
 	private LocalDate dateAdded;
 
 	// empty constructor
-	Book() {
+	public Book() {
 
 	}
 
 	// constructor for creating new book
-	Book(String isbn, String title, String author, String genre, int totalCopies) {
+	public Book(String isbn, String title, String author, String genre, int totalCopies) {
 		this.isbn = isbn;
 		this.title = title;
 		this.author = author;
 		this.genre = genre;
 		this.totalCopies = totalCopies;
+		this.availableCopies = totalCopies;
+		this.dateAdded = LocalDate.now();
 	}
 
 	// constructor for loading from db
-	Book(int bookID, String isbn, String title, String author, String publisher, LocalDate publicationYear,
+	public Book(int bookID, String isbn, String title, String author, String publisher, int publicationYear,
 			String genre, int totalCopies, int availableCopies, LocalDate dateAdded) {
 		this.bookID = bookID;
 		this.isbn = isbn;
@@ -76,7 +78,7 @@ public class Book {
 		return publisher;
 	}
 
-	public LocalDate getPublicationYear() {
+	public int getPublicationYear() {
 		return publicationYear;
 	}
 
@@ -113,7 +115,7 @@ public class Book {
 		this.publisher = publisher;
 	}
 	
-	public void setPublicationYear(LocalDate publicationYear) {
+	public void setPublicationYear(int publicationYear) {
 		this.publicationYear = publicationYear;
 	}
 	
@@ -127,5 +129,9 @@ public class Book {
 	
 	public void setAvailableCopies(int availableCopies) {
 		this.availableCopies = availableCopies;
+	}
+	
+	public void setDateAdded(LocalDate dateAdded) {
+		this.dateAdded = dateAdded;
 	}
 }
