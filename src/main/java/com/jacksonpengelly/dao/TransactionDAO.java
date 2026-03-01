@@ -24,27 +24,29 @@ public class TransactionDAO {
 
 			try (PreparedStatement stmt = conn.prepareStatement(checkBookSql)) {
 				stmt.setInt(1, bookID);
-				ResultSet rs = stmt.executeQuery();
 
-				if (rs.next()) {
-					int availableCopies = rs.getInt("available_copies");
+				try (ResultSet rs = stmt.executeQuery()) {
+					if (rs.next()) {
+						int availableCopies = rs.getInt("available_copies");
 
-					if (availableCopies <= 0)
+						if (availableCopies <= 0)
+							return false;
+					} else {
 						return false;
-				} else {
-					return false;
+					}
 				}
 			}
 
 			boolean isPremium = false;
 			try (PreparedStatement stmt = conn.prepareStatement(checkMemberSql)) {
 				stmt.setInt(1, memberID);
-				ResultSet rs = stmt.executeQuery();
 
-				if (rs.next()) {
-					isPremium = rs.getBoolean("premium");
-				} else {
-					return false;
+				try (ResultSet rs = stmt.executeQuery()) {
+					if (rs.next()) {
+						isPremium = rs.getBoolean("premium");
+					} else {
+						return false;
+					}
 				}
 			}
 
@@ -105,17 +107,18 @@ public class TransactionDAO {
 			int bookID = 0;
 			try (PreparedStatement stmt = conn.prepareStatement(selectBookSql)) {
 				stmt.setInt(1, transactionID);
-				ResultSet rs = stmt.executeQuery();
 
-				if (rs.next()) {
-					String status = rs.getString("status");
-					dueDate = rs.getDate("due_date").toLocalDate();
-					bookID = rs.getInt("book_id");
+				try (ResultSet rs = stmt.executeQuery()) {
+					if (rs.next()) {
+						String status = rs.getString("status");
+						dueDate = rs.getDate("due_date").toLocalDate();
+						bookID = rs.getInt("book_id");
 
-					if (status.equalsIgnoreCase("Returned"))
+						if (status.equalsIgnoreCase("Returned"))
+							return false;
+					} else {
 						return false;
-				} else {
-					return false;
+					}
 				}
 			}
 
@@ -138,7 +141,7 @@ public class TransactionDAO {
 
 				stmt.executeUpdate();
 			}
-			
+
 			conn.commit();
 			return true;
 		} catch (SQLException e) {
@@ -159,6 +162,44 @@ public class TransactionDAO {
 					e.printStackTrace();
 				}
 			}
+		}
+		return false;
+	}
+
+	public int getLoanCount(int memberID) {
+		String sql = "SELECT COUNT(*) FROM transactions WHERE member_id = ? AND return_date IS NULL";
+
+		try (Connection conn = DatabaseConnection.getConnection();
+				PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setInt(1, memberID);
+
+			try (ResultSet rs = stmt.executeQuery()) {
+				if (rs.next()) {
+					return rs.getInt(1);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	public boolean hasBook(int memberID, int bookID) {
+		String sql = "SELECT COUNT(*) FROM transactions WHERE member_id = ? AND book_id = ? AND return_date IS NULL";
+
+		try (Connection conn = DatabaseConnection.getConnection();
+				PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setInt(1, memberID);
+			stmt.setInt(2, bookID);
+
+			try (ResultSet rs = stmt.executeQuery()) {
+				if (rs.next()) {
+					int count = rs.getInt(1);
+					return count > 0;
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 		return false;
 	}

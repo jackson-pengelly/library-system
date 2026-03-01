@@ -70,23 +70,24 @@ public class MemberDAO {
 
 		try (Connection conn = DatabaseConnection.getConnection();
 				PreparedStatement stmt = conn.prepareStatement(sql)) {
-			ResultSet rs = stmt.executeQuery();
 
-			while (rs.next()) {
-				int member_id = rs.getInt("member_id");
-				String first_name = rs.getString("first_name");
-				String last_name = rs.getString("last_name");
-				String emailDB = rs.getString("email");
-				String phone_number = rs.getString("phone_number");
-				String address = rs.getString("address");
-				LocalDate join_date = rs.getDate("join_date").toLocalDate();
-				boolean premium = rs.getBoolean("premium");
-				boolean active = rs.getBoolean("active");
-				LocalDateTime creation_date = rs.getTimestamp("creation_date").toLocalDateTime();
+			try (ResultSet rs = stmt.executeQuery()) {
+				while (rs.next()) {
+					int member_id = rs.getInt("member_id");
+					String first_name = rs.getString("first_name");
+					String last_name = rs.getString("last_name");
+					String emailDB = rs.getString("email");
+					String phone_number = rs.getString("phone_number");
+					String address = rs.getString("address");
+					LocalDate join_date = rs.getDate("join_date").toLocalDate();
+					boolean premium = rs.getBoolean("premium");
+					boolean active = rs.getBoolean("active");
+					LocalDateTime creation_date = rs.getTimestamp("creation_date").toLocalDateTime();
 
-				Member m = new Member(member_id, first_name, last_name, emailDB, phone_number, address, join_date,
-						premium, active, creation_date);
-				members.add(m);
+					Member m = new Member(member_id, first_name, last_name, emailDB, phone_number, address, join_date,
+							premium, active, creation_date);
+					members.add(m);
+				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -109,7 +110,7 @@ public class MemberDAO {
 			stmt.setBoolean(7, newMember.isPremium());
 			stmt.setBoolean(8, newMember.isActive());
 			stmt.setInt(9, newMember.getMemberID());
-			
+
 			stmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -129,5 +130,36 @@ public class MemberDAO {
 			e.printStackTrace();
 		}
 		return false; // incase of error
+	}
+
+	public Member getMemberByMemberID(int memberID) {
+		String sql = "SELECT member_id, first_name, last_name, email, phone_number, address, join_date, premium, active, creation_date FROM members WHERE member_id = ?";
+
+		try (Connection conn = DatabaseConnection.getConnection();
+				PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setInt(1, memberID);
+
+			try (ResultSet rs = stmt.executeQuery()) {
+				if (rs.next()) {
+					int member_id = rs.getInt("member_id");
+					String first_name = rs.getString("first_name");
+					String last_name = rs.getString("last_name");
+					String emailDB = rs.getString("email");
+					String phone_number = rs.getString("phone_number");
+					String address = rs.getString("address");
+					LocalDate join_date = rs.getDate("join_date").toLocalDate();
+					boolean premium = rs.getBoolean("premium");
+					boolean active = rs.getBoolean("active");
+					LocalDateTime creation_date = rs.getTimestamp("creation_date").toLocalDateTime();
+
+					return new Member(member_id, first_name, last_name, emailDB, phone_number, address, join_date,
+							premium, active, creation_date);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return null; // if no member found
 	}
 }

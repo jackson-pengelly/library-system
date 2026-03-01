@@ -37,26 +37,27 @@ public class BookDAO {
 		String sql = "SELECT book_id, isbn, title, author, publisher, publication_year, genre, total_copies, available_copies, date_added FROM books";
 
 		try (Connection conn = DatabaseConnection.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(sql);
-				ResultSet rs = stmt.executeQuery()) {
+				PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-			while (rs.next()) {
-				int bookID = rs.getInt("book_id");
-				String isbn = rs.getString("isbn");
-				String title = rs.getString("title");
-				String author = rs.getString("author");
-				String publisher = rs.getString("publisher");
-				int publicationYear = rs.getInt("publication_year");
-				String genre = rs.getString("genre");
-				int totalCopies = rs.getInt("total_copies");
-				int availableCopies = rs.getInt("available_copies");
-				Date dateAddedSql = rs.getDate("date_added");
+			try (ResultSet rs = stmt.executeQuery()) {
 
-				Book b = new Book(bookID, isbn, title, author, publisher, publicationYear, genre, totalCopies,
-						availableCopies, dateAddedSql.toLocalDate());
-				books.add(b);
+				while (rs.next()) {
+					int bookID = rs.getInt("book_id");
+					String isbn = rs.getString("isbn");
+					String title = rs.getString("title");
+					String author = rs.getString("author");
+					String publisher = rs.getString("publisher");
+					int publicationYear = rs.getInt("publication_year");
+					String genre = rs.getString("genre");
+					int totalCopies = rs.getInt("total_copies");
+					int availableCopies = rs.getInt("available_copies");
+					Date dateAddedSql = rs.getDate("date_added");
+
+					Book b = new Book(bookID, isbn, title, author, publisher, publicationYear, genre, totalCopies,
+							availableCopies, dateAddedSql.toLocalDate());
+					books.add(b);
+				}
 			}
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -130,5 +131,35 @@ public class BookDAO {
 			e.printStackTrace();
 		}
 		return false; // incase of error
+	}
+
+	public Book getBookByID(int bookID) {
+		String sql = "SELECT book_id, isbn, title, author, publisher, publication_year, genre, total_copies, available_copies, date_added FROM books WHERE book_id = ?";
+
+		try (Connection conn = DatabaseConnection.getConnection();
+				PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setInt(1, bookID);
+
+			try (ResultSet rs = stmt.executeQuery()) {
+				if (rs.next()) {
+					int bookIDdb = rs.getInt("book_id");
+					String isbnDB = rs.getString("isbn");
+					String title = rs.getString("title");
+					String author = rs.getString("author");
+					String publisher = rs.getString("publisher");
+					int publicationYear = rs.getInt("publication_year");
+					String genre = rs.getString("genre");
+					int totalCopies = rs.getInt("total_copies");
+					int availableCopies = rs.getInt("available_copies");
+					Date dateAddedSql = rs.getDate("date_added");
+
+					return new Book(bookIDdb, isbnDB, title, author, publisher, publicationYear, genre, totalCopies,
+							availableCopies, dateAddedSql.toLocalDate());
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null; // if no book found
 	}
 }
