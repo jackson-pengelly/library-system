@@ -19,11 +19,11 @@ public class Transaction {
 	}
 
 	// constructor for creating new transaction
-	public Transaction(int memberID, int bookID) {
+	public Transaction(int memberID, int bookID, boolean isPremiumMember) {
 		this.memberID = memberID;
 		this.bookID = bookID;
 		this.issueDate = LocalDate.now();
-		this.dueDate = issueDate.plusWeeks(2);
+		this.dueDate = calculateDueDate(isPremiumMember);
 		this.status = "Issued";
 		this.fineAmount = 0.0;
 		this.returnDate = null;
@@ -49,6 +49,15 @@ public class Transaction {
 		return status.equals("Issued") && LocalDate.now().isAfter(dueDate);
 	}
 
+	// method to calculate duedate
+	public LocalDate calculateDueDate(boolean isPremiumMember) {
+		if (isPremiumMember) {
+			return LocalDate.now().plusWeeks(4);
+		} else {
+			return LocalDate.now().plusWeeks(2);
+		}
+	}
+
 	// method to get days overdue
 	public long getDaysOverdue() {
 		if (isOverdue()) {
@@ -57,25 +66,16 @@ public class Transaction {
 		return 0;
 	}
 
-	// calculate fine amount based on days overdue
-	public void calculateFine() {
-		if (isOverdue()) {
-			fineAmount = getDaysOverdue() * 0.50; // $0.50 per day overdue
-		} else {
-			fineAmount = 0.0;
-		}
-	}
-
 	// return formatted string with transaction info
 	@Override
 	public String toString() {
 		String display = String.format("ID: %d | Book: %d | Member: %d | Issued %s | Due: %s | Status: %s",
 				transactionID, bookID, memberID, issueDate, dueDate, status);
-		
+
 		if (isOverdue()) {
 			display += String.format(" | Overdue by %d days | Fine: $%.2f", getDaysOverdue(), fineAmount);
 		}
-		
+
 		return display;
 	}
 

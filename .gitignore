@@ -10,4 +10,4 @@ target/
 *.class
 
 # Passwords
-src/main/resources/applications.properties
+src/main/resources/application.properties
