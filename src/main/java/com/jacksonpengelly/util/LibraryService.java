@@ -1,5 +1,7 @@
 package com.jacksonpengelly.util;
 
+import java.util.List;
+
 import com.jacksonpengelly.dao.BookDAO;
 import com.jacksonpengelly.dao.MemberDAO;
 import com.jacksonpengelly.dao.TransactionDAO;
@@ -95,5 +97,108 @@ public class LibraryService {
 		}
 
 		transactionDAO.issueBook(memberID, bookID);
+	}
+
+	public Book searchBook(String isbn) throws ValidationException {
+		if (isbn == null || isbn.trim().isEmpty()) {
+			throw new ValidationException("Error: ISBN can not be empty.");
+		}
+
+		if (!isbn.matches("[0-9]+")) {
+			throw new ValidationException("Error: ISBN can only contain diigts");
+		}
+
+		Book book = bookDAO.getBookByISBN(isbn);
+
+		if (book == null) {
+			throw new ValidationException("Error: Book with ISBN: " + isbn + " does not exist.");
+		}
+		return bookDAO.getBookByISBN(isbn);
+	}
+
+	public Book searchBook(int bookID) throws ValidationException {
+		Book book = bookDAO.getBookByID(bookID);
+
+		if (book == null) {
+			throw new ValidationException("Error: Book with " + bookID + " ID does not exist.");
+		}
+		return book;
+	}
+
+	public List<Book> viewAllBooks() throws ValidationException {
+		List<Book> books = bookDAO.getAllBooks();
+
+		if (books == null) {
+			throw new ValidationException("Error: No books found.");
+		}
+		return books;
+	}
+
+	public void deleteBook(int bookID) throws ValidationException {
+		Book book = bookDAO.getBookByID(bookID);
+
+		if (book == null) {
+			throw new ValidationException("Error: Book with " + bookID + " ID does not eixst.");
+		}
+
+		bookDAO.deleteBook(bookID);
+	}
+
+	public void returnBook(int memberID, int bookID) throws ValidationException {
+		if (memberDAO.getMemberByMemberID(memberID) == null) {
+			throw new ValidationException("Error: Member with " + memberID + " ID not found.");
+		}
+
+		if (bookDAO.getBookByID(bookID) == null) {
+			throw new ValidationException("Error: Book with + " + bookID + " ID not found.");
+		}
+
+		int transactionID = transactionDAO.getTransactionID(memberID, bookID);
+
+		if (transactionID == -1) {
+			throw new ValidationException(
+					"Error: Transaction with member ID: " + memberID + " and book ID: " + bookID + " not found.");
+		}
+
+		transactionDAO.returnBook(transactionID);
+	}
+
+	public List<Member> viewAllMembers() throws ValidationException {
+		List<Member> members = memberDAO.getAllMembers();
+
+		if (members == null) {
+			throw new ValidationException("Error: No members found.");
+		}
+
+		return members;
+	}
+
+	public Member searchForMemberByID(int memberID) throws ValidationException {
+		Member member = memberDAO.getMemberByMemberID(memberID);
+
+		if (member == null) {
+			throw new ValidationException("Error: Member with " + memberID + " not found.");
+		}
+
+		return member;
+	}
+
+	public Member searchForMemberByEmail(String email) throws ValidationException {
+		Member member = memberDAO.getMemberByEmail(email);
+
+		if (member == null) {
+			throw new ValidationException("Error: Member with email: " + email + " not found.");
+		}
+
+		return member;
+	}
+
+	public void deleteMember(int memberID) throws ValidationException {
+		Member member = memberDAO.getMemberByMemberID(memberID);
+		if (member == null) {
+			throw new ValidationException("Error: Member with " + memberID + " ID does not exist. ");
+		}
+
+		memberDAO.deleteMember(member);
 	}
 }

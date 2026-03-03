@@ -203,4 +203,24 @@ public class TransactionDAO {
 		}
 		return false;
 	}
+
+	public int getTransactionID(int memberID, int bookID) {
+		String sql = "SELECT transaction_id FROM transactions WHERE member_id = ? AND book_id = ? AND return_date IS NULL";
+
+		try (Connection conn = DatabaseConnection.getConnection();
+				PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setInt(1, memberID);
+			stmt.setInt(2, bookID);
+
+			try (ResultSet rs = stmt.executeQuery()) {
+				if (rs.next()) {
+					int id = rs.getInt(1);
+					return id;
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
 }

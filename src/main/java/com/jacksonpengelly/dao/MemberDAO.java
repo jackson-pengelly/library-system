@@ -117,19 +117,16 @@ public class MemberDAO {
 		}
 	}
 
-	public boolean deleteMember(Member member) {
+	public void deleteMember(Member member) {
 		String sql = "DELETE FROM members WHERE member_id = ?";
 
 		try (Connection conn = DatabaseConnection.getConnection();
 				PreparedStatement stmt = conn.prepareStatement(sql)) {
 			stmt.setInt(1, member.getMemberID());
-			int rowsAffected = stmt.executeUpdate();
-
-			return rowsAffected > 0;
+			stmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return false; // incase of error
 	}
 
 	public Member getMemberByMemberID(int memberID) {

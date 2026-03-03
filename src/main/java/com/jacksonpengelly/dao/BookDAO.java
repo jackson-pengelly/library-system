@@ -118,19 +118,16 @@ public class BookDAO {
 		}
 	}
 
-	public boolean deleteBook(int bookID) {
+	public void deleteBook(int bookID) {
 		String sql = "DELETE FROM books WHERE book_id = ?";
 
 		try (Connection conn = DatabaseConnection.getConnection();
 				PreparedStatement stmt = conn.prepareStatement(sql)) {
 			stmt.setInt(1, bookID);
-			int rowsAffected = stmt.executeUpdate();
-
-			return rowsAffected > 0;
+			stmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return false; // incase of error
 	}
 
 	public Book getBookByID(int bookID) {
