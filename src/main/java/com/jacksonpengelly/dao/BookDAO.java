@@ -97,7 +97,7 @@ public class BookDAO {
 	}
 
 	public void updateBook(Book newBook) {
-		String sql = "UPDATE books SET isbn = ?, title = ?, author = ?, publisher = ?, publication_year = ?, genre = ?, total_copies = ?, available_copies = ?, WHERE book_id = ?";
+		String sql = "UPDATE books SET isbn = ?, title = ?, author = ?, publisher = ?, publication_year = ?, genre = ?, total_copies = ?, available_copies = ? WHERE book_id = ?";
 
 		try (Connection conn = DatabaseConnection.getConnection();
 				PreparedStatement stmt = conn.prepareStatement(sql)) {

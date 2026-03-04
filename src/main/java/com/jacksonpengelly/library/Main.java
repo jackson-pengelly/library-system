@@ -45,6 +45,13 @@ public class Main {
 					System.out.print("Author: ");
 					String author = scanner.nextLine();
 
+					System.out.print("Publisher: ");
+					String publisher = scanner.nextLine();
+
+					System.out.print("Publication Year: ");
+					int publicationYear = scanner.nextInt();
+					scanner.nextLine();
+
 					System.out.print("Genre: ");
 					String genre = scanner.nextLine();
 
@@ -53,7 +60,7 @@ public class Main {
 					scanner.nextLine();
 
 					try {
-						service.addBook(isbn, title, author, genre, totalCopies);
+						service.addBook(isbn, title, author, publisher, publicationYear, genre, totalCopies);
 					} catch (ValidationException e) {
 						System.out.println(e.getMessage());
 					}
@@ -70,10 +77,12 @@ public class Main {
 					}
 					break;
 				case 3:
-					System.out.println("Search by \"ISBN\" or \"Book ID\"");
-					String strChoice = scanner.next().toLowerCase();
-					switch (strChoice) {
-					case "isbn":
+					System.out.println("Search by 1. ISBN or 2. Book ID");
+					choice = scanner.nextInt();
+					scanner.nextLine();
+
+					switch (choice) {
+					case 1:
 						System.out.print("ISBN: ");
 						isbn = scanner.nextLine();
 
@@ -83,7 +92,7 @@ public class Main {
 							System.out.println(e.getMessage());
 						}
 						break;
-					case "book id":
+					case 2:
 						System.out.print("Book ID: ");
 						int bookID = scanner.nextInt();
 						scanner.nextLine();
@@ -99,6 +108,7 @@ public class Main {
 				case 4:
 					System.out.print("ID of book to delete: ");
 					int bookID = scanner.nextInt();
+					scanner.nextLine();
 
 					try {
 						service.deleteBook(bookID);
@@ -108,6 +118,7 @@ public class Main {
 					break;
 				default:
 					System.out.println("Invalid choice.");
+					break;
 				}
 				break;
 			case 2:
@@ -152,11 +163,12 @@ public class Main {
 					}
 					break;
 				case 3:
-					System.out.print("Search for member by \"Member ID\" or \"email\".");
-					String choiceStr = scanner.nextLine().toLowerCase();
+					System.out.print("Search for member by 1. Member ID or 2. Email.");
+					choice = scanner.nextInt();
+					scanner.nextLine();
 
-					switch (choiceStr) {
-					case "member id":
+					switch (choice) {
+					case 1:
 						System.out.print("Member ID: ");
 						int memberID = scanner.nextInt();
 						scanner.nextLine();
@@ -168,7 +180,7 @@ public class Main {
 							System.out.println(e.getMessage());
 						}
 						break;
-					case "email":
+					case 2:
 						System.out.print("Email: ");
 						email = scanner.nextLine();
 
@@ -181,6 +193,7 @@ public class Main {
 						break;
 					default:
 						System.out.println("Invalid choice.");
+						break;
 					}
 					break;
 				case 4:
@@ -197,6 +210,7 @@ public class Main {
 					break;
 				default:
 					System.out.println("Invalid choice.");
+					break;
 				}
 			case 3:
 				System.out.println("=== Transaction Management ===");
@@ -241,6 +255,7 @@ public class Main {
 					break;
 				default:
 					System.out.println("Invalid choice.");
+					break;
 				}
 			case 4:
 				scanner.close();
@@ -248,6 +263,7 @@ public class Main {
 				System.exit(0);
 			default:
 				System.out.println("Invalid choice. ");
+				break;
 			}
 		}
 	}

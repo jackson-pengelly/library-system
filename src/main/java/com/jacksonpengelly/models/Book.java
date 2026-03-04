@@ -20,10 +20,12 @@ public class Book {
 	}
 
 	// constructor for creating new book
-	public Book(String isbn, String title, String author, String genre, int totalCopies) {
+	public Book(String isbn, String title, String author, String publisher, int publicationYear, String genre, int totalCopies) {
 		this.isbn = isbn;
 		this.title = title;
 		this.author = author;
+		this.publisher = publisher;
+		this.publicationYear = publicationYear;
 		this.genre = genre;
 		this.totalCopies = totalCopies;
 		this.availableCopies = totalCopies;

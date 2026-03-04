@@ -19,11 +19,11 @@ public class LibraryService {
 	private MemberDAO memberDAO = new MemberDAO();
 	private TransactionDAO transactionDAO = new TransactionDAO();
 
-	public void addBook(String isbn, String title, String author, String genre, int totalCopies)
+	public void addBook(String isbn, String title, String author, String publisher, int publicationYear, String genre, int totalCopies)
 			throws ValidationException {
 		if (isbn == null || isbn.trim().isEmpty() || title == null || title.trim().isEmpty() || author == null
-				|| author.trim().isEmpty() || genre == null || genre.trim().isEmpty()) {
-			throw new ValidationException("Error: All fields (ISBN, Title, Author, Genre) are required.");
+				|| author.trim().isEmpty() || genre == null || genre.trim().isEmpty() || publisher == null || publisher.trim().isEmpty()) {
+			throw new ValidationException("Error: All fields (ISBN, Title, Author, Genre, Publisher) are required.");
 		}
 
 		if (totalCopies <= 0) {
@@ -42,8 +42,12 @@ public class LibraryService {
 		if (bookDAO.getBookByISBN(isbn) != null) {
 			throw new ValidationException("Error: Book with " + isbn + " already exists.");
 		}
+		
+		if (publicationYear < 0) {
+			throw new ValidationException("Error: Publication year must be greater than 0.");
+		}
 
-		Book newBook = new Book(isbn, title, author, genre, totalCopies);
+		Book newBook = new Book(isbn, title, author, publisher, publicationYear, genre, totalCopies);
 		bookDAO.addBook(newBook);
 	}
 
