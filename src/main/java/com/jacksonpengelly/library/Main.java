@@ -30,6 +30,7 @@ public class Main {
 				System.out.println("2. View All Books");
 				System.out.println("3. Search For Book");
 				System.out.println("4. Delete Book");
+				System.out.println("5. Update Book");
 				choice = scanner.nextInt();
 				scanner.nextLine();
 				System.out.println();
@@ -112,8 +113,95 @@ public class Main {
 
 					try {
 						service.deleteBook(bookID);
+						System.out.println("Book with " + bookID + " ID successfully deleted.");
 					} catch (ValidationException e) {
 						System.out.println(e.getMessage());
+					}
+					break;
+				case 5:
+					System.out.print("ID of book to update: ");
+					int id = scanner.nextInt();
+					scanner.nextLine();
+
+					Book book;
+					try {
+						book = service.searchBook(id);
+						System.out.println("(Press enter to keep current value)");
+
+						System.out.print("ISBN [" + book.getISBN() + "]: ");
+						String isbnInput = scanner.nextLine();
+						if (!isbnInput.trim().isEmpty()) {
+							isbn = isbnInput;
+						} else {
+							isbn = book.getISBN();
+						}
+
+						System.out.print("Title [" + book.getTitle() + "]: ");
+						String input = scanner.nextLine();
+						if (!input.trim().isEmpty()) {
+							title = input;
+						} else {
+							title = book.getTitle();
+						}
+
+						System.out.print("Author [" + book.getAuthor() + "]: ");
+						input = scanner.nextLine();
+						if (!input.trim().isEmpty()) {
+							author = input;
+						} else {
+							author = book.getAuthor();
+						}
+
+						System.out.print("Publisher [" + book.getPublisher() + "]: ");
+						input = scanner.nextLine();
+						if (!input.trim().isEmpty()) {
+							publisher = input;
+						} else {
+							publisher = book.getPublisher();
+						}
+
+						System.out.print("Publication Year [" + book.getPublicationYear() + "]: ");
+						input = scanner.nextLine();
+						if (!input.trim().isEmpty()) {
+							try {
+								publicationYear = Integer.parseInt(input);
+							} catch (NumberFormatException e) {
+								throw new ValidationException("Error: Publication year must be an integer.");
+							}
+						} else {
+							publicationYear = book.getPublicationYear();
+						}
+
+						System.out.print("Genre [" + book.getGenre() + "]: ");
+						input = scanner.nextLine();
+						if (!input.trim().isEmpty()) {
+							genre = input;
+						} else {
+							genre = book.getGenre();
+						}
+
+						System.out.print("Total Copies [" + book.getTotalCopies() + "]: ");
+						input = scanner.nextLine();
+						if (!input.trim().isEmpty()) {
+							try {
+								totalCopies = Integer.parseInt(input);
+							} catch (NumberFormatException e) {
+								throw new ValidationException("Error: Total copies must be an integer.");
+							}
+
+							if (totalCopies < book.getTotalCopies() - book.getAvailableCopies()) {
+								throw new ValidationException(
+										"Error: Total copies cannot be less than number of copies currently issued.");
+							}
+						} else {
+							totalCopies = book.getTotalCopies();
+						}
+						
+						service.updateBook(id, isbn, title, author, publisher, publicationYear, genre, totalCopies);
+						System.out.println("Book with " + id + " ID successfully updated.");
+					} catch (ValidationException e) {
+						System.out.println(e.getMessage());
+						break;
 					}
 					break;
 				default:
@@ -127,6 +215,7 @@ public class Main {
 				System.out.println("2. View All Members");
 				System.out.println("3. Search For Member");
 				System.out.println("4. Delete Member");
+				System.out.println("5. Update Member");
 				choice = scanner.nextInt();
 				scanner.nextLine();
 				System.out.println();
@@ -145,8 +234,17 @@ public class Main {
 					System.out.print("Phone number: ");
 					String phoneNumber = scanner.nextLine();
 
+					System.out.print("Address: ");
+					String address = scanner.nextLine();
+
+					System.out.print("Premium member? (y/n): ");
+					boolean premium = scanner.nextLine().trim().equalsIgnoreCase("y");
+
+					System.out.print("Active member? (y/n): ");
+					boolean active = scanner.nextLine().trim().equalsIgnoreCase("y");
+
 					try {
-						service.registerMember(firstName, lastName, email, phoneNumber);
+						service.registerMember(firstName, lastName, email, phoneNumber, address, premium, active);
 					} catch (ValidationException e) {
 						System.out.println(e.getMessage());
 					}
@@ -208,10 +306,91 @@ public class Main {
 						System.out.println(e.getMessage());
 					}
 					break;
+				case 5:
+					System.out.print("Member ID: ");
+					memberID = scanner.nextInt();
+					scanner.nextLine();
+
+					Member member;
+					try {
+						member = service.searchForMemberByID(memberID);
+						System.out.println("(Press enter to keep current value)");
+
+						System.out.print("First name [" + member.getFirstName() + "]: ");
+						String input = scanner.nextLine();
+						String firstNameInput;
+						if (!input.trim().isEmpty()) {
+							firstNameInput = input;
+						} else {
+							firstNameInput = member.getFirstName();
+						}
+
+						System.out.print("Last name [" + member.getLastName() + "]: ");
+						input = scanner.nextLine();
+						String lastNameInput;
+						if (!input.trim().isEmpty()) {
+							lastNameInput = input;
+						} else {
+							lastNameInput = member.getLastName();
+						}
+
+						System.out.print("Email [" + member.getEmail() + "]: ");
+						input = scanner.nextLine();
+						String emailInput;
+						if (!input.trim().isEmpty()) {
+							emailInput = input;
+						} else {
+							emailInput = member.getEmail();
+						}
+
+						System.out.print("Phone number [" + member.getPhoneNumber() + "]: ");
+						input = scanner.nextLine();
+						String phoneNumberInput;
+						if (!input.trim().isEmpty()) {
+							phoneNumberInput = input;
+						} else {
+							phoneNumberInput = member.getPhoneNumber();
+						}
+
+						System.out.print("Address [" + member.getAddress() + "]: ");
+						input = scanner.nextLine();
+						String addressInput;
+						if (!input.trim().isEmpty()) {
+							addressInput = input;
+						} else {
+							addressInput = member.getAddress();
+						}
+
+						System.out.print("Premium member? (y/n) [" + (member.isPremium() ? "y" : "n") + "]: ");
+						input = scanner.nextLine();
+						boolean premiumInput;
+						if (!input.trim().isEmpty()) {
+							premiumInput = input.trim().equalsIgnoreCase("y");
+						} else {
+							premiumInput = member.isPremium();
+						}
+
+						System.out.print("Active member? (y/n) [" + (member.isActive() ? "y" : "n") + "]: ");
+						input = scanner.nextLine();
+						boolean activeInput;
+						if (!input.trim().isEmpty()) {
+							activeInput = input.trim().equalsIgnoreCase("y");
+						} else {
+							activeInput = member.isActive();
+						}
+						
+						service.updateMember(memberID, firstNameInput, lastNameInput, emailInput, phoneNumberInput,
+								addressInput, premiumInput, activeInput);
+						System.out.println("Member with " + memberID + " ID successfully updated.");
+					} catch (ValidationException e) {
+						System.out.println(e.getMessage());
+					}
+					break;
 				default:
 					System.out.println("Invalid choice.");
 					break;
 				}
+				break;
 			case 3:
 				System.out.println("=== Transaction Management ===");
 				System.out.println("1. Issue Book");
@@ -257,6 +436,7 @@ public class Main {
 					System.out.println("Invalid choice.");
 					break;
 				}
+				break;
 			case 4:
 				scanner.close();
 				System.out.println("Exiting...");

@@ -19,10 +19,11 @@ public class LibraryService {
 	private MemberDAO memberDAO = new MemberDAO();
 	private TransactionDAO transactionDAO = new TransactionDAO();
 
-	public void addBook(String isbn, String title, String author, String publisher, int publicationYear, String genre, int totalCopies)
-			throws ValidationException {
+	public void addBook(String isbn, String title, String author, String publisher, int publicationYear, String genre,
+			int totalCopies) throws ValidationException {
 		if (isbn == null || isbn.trim().isEmpty() || title == null || title.trim().isEmpty() || author == null
-				|| author.trim().isEmpty() || genre == null || genre.trim().isEmpty() || publisher == null || publisher.trim().isEmpty()) {
+				|| author.trim().isEmpty() || genre == null || genre.trim().isEmpty() || publisher == null
+				|| publisher.trim().isEmpty()) {
 			throw new ValidationException("Error: All fields (ISBN, Title, Author, Genre, Publisher) are required.");
 		}
 
@@ -42,7 +43,7 @@ public class LibraryService {
 		if (bookDAO.getBookByISBN(isbn) != null) {
 			throw new ValidationException("Error: Book with " + isbn + " already exists.");
 		}
-		
+
 		if (publicationYear < 0) {
 			throw new ValidationException("Error: Publication year must be greater than 0.");
 		}
@@ -51,8 +52,8 @@ public class LibraryService {
 		bookDAO.addBook(newBook);
 	}
 
-	public void registerMember(String firstName, String lastName, String email, String phone)
-			throws ValidationException {
+	public void registerMember(String firstName, String lastName, String email, String phone, String address,
+			boolean premium, boolean active) throws ValidationException {
 		if (firstName == null || firstName.trim().isEmpty() || lastName == null || lastName.trim().isEmpty()
 				|| email == null || email.trim().isEmpty() || phone == null || phone.trim().isEmpty()) {
 			throw new ValidationException(
@@ -67,7 +68,15 @@ public class LibraryService {
 			throw new ValidationException("Error: Email already in use.");
 		}
 
-		Member newMember = new Member(firstName, lastName, email, phone);
+		if (!phone.matches("[0-9]+")) {
+			throw new ValidationException("Error: Phone number must only contain digits.");
+		}
+
+		if (address == null || address.trim().isEmpty()) {
+			throw new ValidationException("Error: Address is required.");
+		}
+
+		Member newMember = new Member(firstName, lastName, email, phone, address, premium, active);
 		memberDAO.registerMember(newMember);
 	}
 
@@ -204,5 +213,96 @@ public class LibraryService {
 		}
 
 		memberDAO.deleteMember(member);
+	}
+
+	public void updateBook(int bookID, String isbn, String title, String author, String publisher, int publicationYear,
+			String genre, int totalCopies) throws ValidationException {
+		Book book = bookDAO.getBookByID(bookID);
+
+		if (book == null) {
+			throw new ValidationException("Error: Book with " + bookID + " ID does not exist.");
+		}
+
+		if (isbn != null && !isbn.trim().isEmpty()) {
+			if (isbn.length() != isbnLength1 && isbn.length() != isbnLength2) {
+				throw new ValidationException(
+						"Error: ISBN must be " + isbnLength1 + " or " + isbnLength2 + " digits long. ");
+			}
+
+			if (!isbn.matches("[0-9]+")) {
+				throw new ValidationException("Error: ISBN must only contain digits. ");
+			}
+
+			book.setISBN(isbn);
+		}
+
+		if (title != null && !title.trim().isEmpty()) {
+			book.setTitle(title);
+		}
+
+		if (author != null && !author.trim().isEmpty()) {
+			book.setAuthor(author);
+		}
+
+		if (publisher != null && !publisher.trim().isEmpty()) {
+			book.setPublisher(publisher);
+		}
+
+		if (publicationYear > 0) {
+			book.setPublicationYear(publicationYear);
+		}
+
+		if (genre != null && !genre.trim().isEmpty()) {
+			book.setGenre(genre);
+		}
+
+		if (totalCopies > 0) {
+			book.setTotalCopies(totalCopies);
+		}
+
+		bookDAO.updateBook(book);
+	}
+
+	public void updateMember(int memberID, String firstName, String lastName, String email, String phone,
+			String address, boolean premium, boolean active) throws ValidationException {
+		Member member = memberDAO.getMemberByMemberID(memberID);
+
+		if (member == null) {
+			throw new ValidationException("Error: Member with " + memberID + " ID does not exist.");
+		}
+
+		if (firstName != null && !firstName.trim().isEmpty()) {
+			member.setFirstName(firstName);
+		}
+
+		if (lastName != null && !lastName.trim().isEmpty()) {
+			member.setLastName(lastName);
+		}
+
+		if (email != null && !email.trim().isEmpty()) {
+			if (!email.contains("@") || !email.contains(".")) {
+				throw new ValidationException("Error: Email must contain \"@\" and \".\".");
+			}
+
+			member.setEmail(email);
+		}
+
+		if (phone != null && !phone.trim().isEmpty()) {
+			member.setPhoneNumber(phone);
+		}
+
+		if (!phone.matches("[0-9]+")) {
+			throw new ValidationException("Error: Phone number must only contain digits.");
+		}
+
+		if (address != null && !address.trim().isEmpty()) {
+			member.setAddress(address);
+		}
+
+		member.setPremium(premium);
+
+		member.setActive(active);
+
+		memberDAO.updateMember(member);
 	}
 }

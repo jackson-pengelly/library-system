@@ -21,7 +21,7 @@ public class Member {
 	}
 
 	// constructor for adding new member
-	public Member(String firstName, String lastName, String email, String phoneNumber) {
+	public Member(String firstName, String lastName, String email, String phoneNumber, String address, boolean premium, boolean active) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
